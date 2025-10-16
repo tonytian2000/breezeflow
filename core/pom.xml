@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.zero2me.breezeflow</groupId>
+        <artifactId>breezeflow-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>breezeflow-core</artifactId>
+    <packaging>jar</packaging>
+
+    <name>BreezeFlow Core</name>
+    <description>Core implementation and business logic for BreezeFlow</description>
+
+    <dependencies>
+        <!-- Common module dependency -->
+        <dependency>
+            <groupId>com.zero2me.breezeflow</groupId>
+            <artifactId>breezeflow-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <!-- API module dependency -->
+        <dependency>
+            <groupId>com.zero2me.breezeflow</groupId>
+            <artifactId>breezeflow-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <!-- SLF4J API -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        
+        <!-- Logback implementation for runtime -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+        
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.24</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>

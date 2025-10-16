@@ -1,0 +1,8 @@
+com/zero2me/breezeflow/core/DefaultExecutionContext.class
+com/zero2me/breezeflow/core/SampleWorkflow.class
+com/zero2me/breezeflow/core/WorkflowExecution.class
+com/zero2me/breezeflow/core/DefaultStepResult.class
+com/zero2me/breezeflow/core/LoggingStepHandler.class
+com/zero2me/breezeflow/core/DefaultWorkflowResult.class
+com/zero2me/breezeflow/core/DefaultWorkflowEngine.class
+com/zero2me/breezeflow/core/SampleWorkflowStep.class

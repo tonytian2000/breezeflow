@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.zero2me.breezeflow</groupId>
+    <artifactId>breezeflow-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>BreezeFlow Parent</name>
+    <description>A multi-module Java library for workflow management</description>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        
+        <!-- Dependency versions -->
+        <slf4j.version>2.0.9</slf4j.version>
+        <logback.version>1.4.14</logback.version>
+        <junit.version>5.10.1</junit.version>
+        <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
+        <maven.source.plugin.version>3.3.0</maven.source.plugin.version>
+        <maven.javadoc.plugin.version>3.6.3</maven.javadoc.plugin.version>
+        <maven.deploy.plugin.version>3.1.1</maven.deploy.plugin.version>
+        <maven.gpg.plugin.version>3.1.0</maven.gpg.plugin.version>
+        <nexus.staging.maven.plugin.version>1.6.13</nexus.staging.maven.plugin.version>
+    </properties>
+
+    <modules>
+        <module>common</module>
+        <module>api</module>
+        <module>core</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- SLF4J API -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            
+            <!-- Logback implementation -->
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            
+            <!-- JUnit 5 for testing -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- SLF4J API - available to all modules -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven.compiler.plugin.version}</version>
+                    <configuration>
+                        <source>17</source>
+                        <target>17</target>
+                        <encoding>UTF-8</encoding>
+                    </configuration>
+                </plugin>
+                
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${maven.source.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${maven.javadoc.plugin.version}</version>
+                    <configuration>
+                        <source>17</source>
+                        <target>17</target>
+                        <encoding>UTF-8</encoding>
+                        <docencoding>UTF-8</docencoding>
+                        <charset>UTF-8</charset>
+                        <doclint>none</doclint>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- Distribution Management for Cloud Artifactory -->
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <name>Release Repository</name>
+            <url>https://your-artifactory-domain/artifactory/libs-release-local</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>Snapshot Repository</name>
+            <url>https://your-artifactory-domain/artifactory/libs-snapshot-local</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <!-- Profiles for different deployment scenarios -->
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven.gpg.plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
