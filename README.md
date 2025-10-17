@@ -47,7 +47,7 @@ Comprehensive examples and tutorials:
 
 ## Quick Start
 
-### Adding as a Dependency
+### Adding as a Dependency (NOT YET READY, PLEASE WAIT)
 
 Add the following to your `pom.xml`:
 
