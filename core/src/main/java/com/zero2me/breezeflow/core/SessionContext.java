@@ -10,7 +10,7 @@ public class SessionContext {
      *
      * @return the execution variables
      */
-    Map<String, Object> getContextData() {
+    public Map<String, Object> getContextData() {
         return dataContext;
     }
 
@@ -20,7 +20,7 @@ public class SessionContext {
      * @param name the variable name
      * @param value the variable value
      */
-    void setVariable(String name, Object value) {
+    public void setVariable(String name, Object value) {
         dataContext.put(name, value);
     }
 
@@ -30,7 +30,7 @@ public class SessionContext {
      * @param name the variable name
      * @return the variable value, or null if not found
      */
-    Object getVariable(String name) {
+    public Object getVariable(String name) {
         return dataContext.get(name);
     }
 }

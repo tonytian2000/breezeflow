@@ -25,13 +25,6 @@
             <version>${project.version}</version>
         </dependency>
         
-        <!-- API module dependency -->
-        <dependency>
-            <groupId>com.zero2me.breezeflow</groupId>
-            <artifactId>breezeflow-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
         <!-- SLF4J API -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -53,8 +46,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.24</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

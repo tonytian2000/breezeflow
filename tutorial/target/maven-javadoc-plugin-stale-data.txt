@@ -1,0 +1,54 @@
+@options
+@packages
+-classpath
+'/Users/admin/zero/breezeflow/core/target/breezeflow-core-1.0.0-SNAPSHOT.jar:/Users/admin/zero/breezeflow/common/target/breezeflow-common-1.0.0-SNAPSHOT.jar:/Users/admin/.m2/repository/org/slf4j/slf4j-api/2.0.9/slf4j-api-2.0.9.jar:/Users/admin/.m2/repository/ch/qos/logback/logback-classic/1.4.14/logback-classic-1.4.14.jar:/Users/admin/.m2/repository/ch/qos/logback/logback-core/1.4.14/logback-core-1.4.14.jar:/Users/admin/.m2/repository/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar'
+-encoding
+'UTF-8'
+-protected
+-source
+'17'
+-sourcepath
+'/Users/admin/zero/breezeflow/tutorial/src/main/java:/Users/admin/zero/breezeflow/tutorial/target/generated-sources/annotations'
+-author
+-bottom
+'Copyright &#169; 2025. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'/Users/admin/zero/breezeflow/tutorial/target/apidocs'
+-docencoding
+'UTF-8'
+-Xdoclint:none
+-doctitle
+'BreezeFlow Tutorial 1.0.0-SNAPSHOT API'
+-use
+-version
+-windowtitle
+'BreezeFlow Tutorial 1.0.0-SNAPSHOT API'
+com.zero2me.breezeflow.tutorial.tasks
+com.zero2me.breezeflow.tutorial.workflows
+/Users/admin/zero/breezeflow/core/target/breezeflow-core-1.0.0-SNAPSHOT.jar = 1760672920002
+/Users/admin/zero/breezeflow/common/target/breezeflow-common-1.0.0-SNAPSHOT.jar = 1760672917339
+/Users/admin/.m2/repository/org/slf4j/slf4j-api/2.0.9/slf4j-api-2.0.9.jar = 1693757672000
+/Users/admin/.m2/repository/ch/qos/logback/logback-classic/1.4.14/logback-classic-1.4.14.jar = 1701431604000
+/Users/admin/.m2/repository/ch/qos/logback/logback-core/1.4.14/logback-core-1.4.14.jar = 1701431559000
+/Users/admin/.m2/repository/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar = 1695178071000
+/Users/admin/zero/breezeflow/tutorial/src/main/java = 1760665876347
+/Users/admin/zero/breezeflow/tutorial/target/generated-sources/annotations = 1760672921735
+/Users/admin/zero/breezeflow/tutorial/target/apidocs/tag-search-index.js = 1760672924079
+/Users/admin/zero/breezeflow/tutorial/target/apidocs/overview-tree.html = 1760672924056
+/Users/admin/zero/breezeflow/tutorial/target/apidocs/module-search-index.js = 1760672924076
+/Users/admin/zero/breezeflow/tutorial/target/apidocs/index.html = 1760672924059
+/Users/admin/zero/breezeflow/tutorial/target/apidocs/package-search-index.js = 1760672924077
+/Users/admin/zero/breezeflow/tutorial/target/apidocs/jquery-ui.overrides.css = 1760672924109
+/Users/admin/zero/breezeflow/tutorial/target/apidocs/index-all.html = 1760672924095
+/Users/admin/zero/breezeflow/tutorial/target/apidocs/allpackages-index.html = 1760672924075
+/Users/admin/zero/breezeflow/tutorial/target/apidocs/member-search-index.js = 1760672924078
+/Users/admin/zero/breezeflow/tutorial/target/apidocs/script.js = 1760672924103
+/Users/admin/zero/breezeflow/tutorial/target/apidocs/stylesheet.css = 1760672924102
+/Users/admin/zero/breezeflow/tutorial/target/apidocs/overview-summary.html = 1760672924096
+/Users/admin/zero/breezeflow/tutorial/target/apidocs/help-doc.html = 1760672924100
+/Users/admin/zero/breezeflow/tutorial/target/apidocs/element-list = 1760672924001
+/Users/admin/zero/breezeflow/tutorial/target/apidocs/allclasses-index.html = 1760672924073
+/Users/admin/zero/breezeflow/tutorial/target/apidocs/type-search-index.js = 1760672924077
+/Users/admin/zero/breezeflow/tutorial/target/apidocs/search.js = 1760672924105

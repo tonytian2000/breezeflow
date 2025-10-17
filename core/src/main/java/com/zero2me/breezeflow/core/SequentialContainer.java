@@ -5,6 +5,11 @@ import java.util.List;
 
 public class SequentialContainer extends Task {
     private List<Task> tasks = new LinkedList<>();
+    
+    // Package-private constructor - only TaskFactory can create SequentialContainer instances
+    SequentialContainer() {
+        super();
+    }
 
     public void addTask(Task task) {
         tasks.add(task);
@@ -21,9 +26,14 @@ public class SequentialContainer extends Task {
 
     @Override
     public void invoke() {
-        tasks.forEach(task -> {
-            task.run();
-        });
+        for (Task task : tasks) {
+            try {
+                task.run();
+            } catch (WorkflowExecutionException e) {
+                logger.error("Sequential task execution failed for task: {}", task.getId(), e);
+                throw new RuntimeException("Sequential task execution failed for task: " + task.getId(), e);
+            }
+        }
     }
 
     @Override

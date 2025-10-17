@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.zero2me.breezeflow.common.ValidationUtilsTest
--------------------------------------------------------------------------------
-Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.056 s -- in com.zero2me.breezeflow.common.ValidationUtilsTest

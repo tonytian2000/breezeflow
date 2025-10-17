@@ -4,38 +4,46 @@ A multi-module Java library for workflow management and execution, built with Ma
 
 ## Overview
 
-BreezeFlow is a lightweight workflow engine library that provides a clean API for defining and executing workflows. It's designed to be used as a dependency in other Java projects and supports cloud artifactory deployment.
+BreezeFlow is a lightweight workflow engine library that provides a clean API for defining and executing workflows. It features a controlled task creation pattern through TaskFactory and supports both sequential and parallel task execution. The library is designed to be used as a dependency in other Java projects and supports cloud artifactory deployment.
 
 ## Features
 
-- **Multi-module Architecture**: Clean separation of concerns with `common`, `api`, and `core` modules
+- **Multi-module Architecture**: Clean separation of concerns with `common`, `core`, and `tutorial` modules
 - **JDK 17 Support**: Built and tested with Java 17
 - **SLF4J Logging**: Comprehensive logging with SLF4J and Logback
-- **Async Execution**: Support for both synchronous and asynchronous workflow execution
-- **Extensible**: Plugin-based architecture for custom step handlers
+- **TaskFactory Pattern**: Controlled task creation and dependency injection
+- **Parallel & Sequential Execution**: Support for both parallel and sequential task execution
+- **Thread Pool Management**: Configurable thread pools for parallel execution
+- **Extensible Workflow System**: Easy-to-extend workflow and task framework
+- **Comprehensive Tutorials**: Complete tutorial module with examples
 - **Cloud Ready**: Configured for deployment to cloud artifactory repositories
 
 ## Module Structure
 
 ### Common Module (`breezeflow-common`)
 Contains shared utilities and common functionality:
-- `LoggerFactory`: Centralized logger creation
+- `BreezeFlowLoggerFactory`: Centralized logger creation
+- `LogFactory`: Logger factory for consistent logging
 - `ValidationUtils`: Common validation utilities
 
-### API Module (`breezeflow-api`)
-Defines the public interfaces and contracts:
-- `WorkflowEngine`: Main engine interface
-- `Workflow`: Workflow definition interface
-- `WorkflowStep`: Individual step interface
-- `StepHandler`: Handler interface for custom steps
-- `ExecutionContext`: Execution context interface
-- Result and status enums
-
 ### Core Module (`breezeflow-core`)
-Contains the implementation:
-- `DefaultWorkflowEngine`: Main engine implementation
-- `LoggingStepHandler`: Sample step handler
-- Internal execution tracking classes
+Contains the main workflow engine implementation:
+- `Workflow`: Main workflow class with task management
+- `TaskFactory`: Controlled task creation and dependency injection
+- `Task`: Abstract base class for all tasks
+- `ParallelContainer`: Parallel task execution container
+- `SequentialContainer`: Sequential task execution container
+- `SessionConfig`: Configuration management including thread pool settings
+- `Facts`: Data sharing mechanism between tasks
+- `WorkflowListener`: Event notification system
+
+### Tutorial Module (`breezeflow-tutorial`)
+Comprehensive examples and tutorials:
+- Task examples (SimpleTask, DataProcessingTask, ValidationTask)
+- Container examples (ParallelContainer, SequentialContainer)
+- Workflow examples and patterns
+- Interactive tutorial runner
+- Best practices and usage patterns
 
 ## Quick Start
 
@@ -54,18 +62,50 @@ Add the following to your `pom.xml`:
 ### Basic Usage
 
 ```java
-import com.zero2me.breezeflow.core.DefaultWorkflowEngine;
-import com.zero2me.breezeflow.core.LoggingStepHandler;
-import com.zero2me.breezeflow.api.WorkflowEngine;
+import com.zero2me.breezeflow.core.*;
 
-// Create engine
-WorkflowEngine engine = new DefaultWorkflowEngine();
+// Create a workflow
+Workflow workflow = new Workflow();
 
-// Register step handlers
-engine.registerStepHandler("logging", new LoggingStepHandler());
+// Get TaskFactory from workflow (this is the only way to create tasks)
+TaskFactory taskFactory = workflow.getTaskFactory();
 
-// Execute workflow (implementation depends on your workflow definition)
-// WorkflowResult result = engine.execute(yourWorkflow);
+// Create and configure tasks
+SimpleTask task1 = taskFactory.buildTask(SimpleTask.class, "Task1");
+SimpleTask task2 = taskFactory.buildTask(SimpleTask.class, "Task2");
+
+// Add tasks to workflow
+workflow.addTask(task1);
+workflow.addTask(task2);
+
+// Execute the workflow
+workflow.run();
+```
+
+### Advanced Usage with Parallel Execution
+
+```java
+import com.zero2me.breezeflow.core.*;
+
+// Create workflow and configure thread pool
+Workflow workflow = new Workflow();
+workflow.getSessionConfig().setThreadPoolSize(4);
+
+TaskFactory taskFactory = workflow.getTaskFactory();
+
+// Create parallel container
+ParallelContainer parallelContainer = taskFactory.buildTask(ParallelContainer.class, "ParallelTasks");
+
+// Add tasks to parallel container
+parallelContainer.addTask(taskFactory.buildTask(SimpleTask.class, "ParallelTask1"));
+parallelContainer.addTask(taskFactory.buildTask(SimpleTask.class, "ParallelTask2"));
+parallelContainer.addTask(taskFactory.buildTask(SimpleTask.class, "ParallelTask3"));
+
+// Add parallel container to workflow
+workflow.addTask(parallelContainer);
+
+// Execute workflow
+workflow.run();
 ```
 
 ## Building the Project
@@ -124,23 +164,93 @@ breezeflow/
 ├── common/                 # Common utilities module
 │   ├── pom.xml
 │   └── src/
-├── api/                    # API interfaces module
-│   ├── pom.xml
-│   └── src/
 ├── core/                   # Core implementation module
 │   ├── pom.xml
+│   └── src/
+│       └── main/java/com/zero2me/breezeflow/core/
+│           ├── Workflow.java
+│           ├── TaskFactory.java
+│           ├── Task.java
+│           ├── ParallelContainer.java
+│           ├── SequentialContainer.java
+│           ├── SessionConfig.java
+│           ├── Facts.java
+├── tutorial/               # Tutorial and examples module
+│   ├── pom.xml
+│   ├── README.md
 │   └── src/
 └── .mvn/
     └── settings.xml        # Maven settings for deployment
 ```
 
-### Adding New Step Handlers
+### Creating Custom Tasks
 
-1. Implement the `StepHandler` interface
-2. Register your handler with the engine:
+1. Extend the `Task` class:
    ```java
-   engine.registerStepHandler("your-step-type", new YourStepHandler());
+   public class MyCustomTask extends Task {
+       @Override
+       protected boolean preCheck() {
+           // Add validation logic here
+           return true;
+       }
+       
+       @Override
+       protected void invoke() {
+           // Add your task logic here
+           logger.info("Executing custom task: {}", getName());
+       }
+   }
    ```
+
+2. Use TaskFactory to create instances:
+   ```java
+   Workflow workflow = new Workflow();
+   TaskFactory taskFactory = workflow.getTaskFactory();
+   MyCustomTask task = taskFactory.buildTask(MyCustomTask.class, "MyTask");
+   workflow.addTask(task);
+   workflow.run();
+   ```
+
+### Extending Workflow
+
+You can extend the `Workflow` class to create custom workflow types:
+
+```java
+public class MyCustomWorkflow extends Workflow {
+    @Override
+    public void buildWorkflow() {
+        // Add your custom workflow logic here
+        addTask(taskFactory.buildTask(MyCustomTask.class, "CustomTask1"));
+        addTask(taskFactory.buildTask(MyCustomTask.class, "CustomTask2"));
+    }
+}
+```
+
+### Workflow Features
+
+The `Workflow` class provides several ways to add tasks:
+
+```java
+Workflow workflow = new Workflow();
+TaskFactory taskFactory = workflow.getTaskFactory();
+
+// Method 1: Add task by class and name (creates task automatically)
+workflow.addTask(SimpleTask.class, "Task1");
+
+// Method 2: Add pre-configured task instance
+SimpleTask task = taskFactory.buildTask(SimpleTask.class, "Task2");
+workflow.addTask(task);
+
+// Method 3: Build workflow in subclass
+public class MyWorkflow extends Workflow {
+    @Override
+    public void buildWorkflow() {
+        // Custom workflow building logic
+        TaskFactory taskFactory = getTaskFactory();
+        addTask(taskFactory.buildTask(MyCustomTask.class, "CustomTask"));
+    }
+}
+```
 
 ### Logging Configuration
 
@@ -148,6 +258,31 @@ Logging is configured via Logback. The configuration file is located at:
 `core/src/main/resources/logback.xml`
 
 You can customize logging levels and appenders as needed.
+
+## Tutorial and Examples
+
+The project includes a comprehensive tutorial module with examples and best practices:
+
+### Running Tutorials
+
+```bash
+# Run interactive tutorial
+mvn exec:java -Dexec.mainClass="com.zero2me.breezeflow.tutorial.TutorialRunner"
+
+# Run specific examples
+mvn exec:java -Dexec.mainClass="com.zero2me.breezeflow.tutorial.TutorialRunner" -Dexec.args="tasks"
+mvn exec:java -Dexec.mainClass="com.zero2me.breezeflow.tutorial.TutorialRunner" -Dexec.args="parallel"
+mvn exec:java -Dexec.mainClass="com.zero2me.breezeflow.tutorial.TutorialRunner" -Dexec.args="sequential"
+mvn exec:java -Dexec.mainClass="com.zero2me.breezeflow.tutorial.TutorialRunner" -Dexec.args="workflow"
+```
+
+### Tutorial Features
+
+- **Task Examples**: SimpleTask, DataProcessingTask, ValidationTask
+- **Container Examples**: ParallelContainer and SequentialContainer usage
+- **Workflow Examples**: Basic and advanced workflow patterns
+- **Interactive Runner**: Menu-driven example execution
+- **Best Practices**: Proper usage patterns and common pitfalls
 
 ## Testing
 
@@ -170,6 +305,60 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 5. Ensure all tests pass
 6. Submit a pull request
 
+## Key Concepts
+
+### TaskFactory Pattern
+All tasks must be created through the TaskFactory obtained from a Workflow instance to ensure:
+- Proper dependency injection
+- Consistent configuration
+- Controlled instantiation
+- Error handling
+
+```java
+// ✅ Correct - Get TaskFactory from Workflow
+Workflow workflow = new Workflow();
+TaskFactory taskFactory = workflow.getTaskFactory();
+SimpleTask task = taskFactory.buildTask(SimpleTask.class, "MyTask");
+
+// ❌ Incorrect - Direct TaskFactory instantiation (will cause compilation error)
+// TaskFactory taskFactory = new TaskFactory(facts, sessionContext, sessionConfig, listener);
+
+// ❌ Incorrect - Direct task instantiation (will cause compilation error)
+// SimpleTask task = new SimpleTask();
+```
+
+### Facts Management
+Facts provide a way to share data between tasks:
+- Input data for tasks
+- Output results from tasks
+- Configuration parameters
+- Validation results
+
+```java
+// Create workflow and get facts
+Workflow workflow = new Workflow();
+Facts facts = workflow.getFacts();
+
+// Set input data
+facts.put("numbers", Arrays.asList(1, 2, 3, 4, 5));
+facts.put("email", "user@example.com");
+
+// Get results
+Number sum = facts.get("sum");
+Map<String, Object> validation = facts.get("emailValidation");
+```
+
+### Thread Pool Configuration
+ParallelContainer uses configurable thread pools:
+- Set via SessionConfig
+- Override via constructor
+- Automatic fallback to available processors
+
+```java
+Workflow workflow = new Workflow();
+workflow.getSessionConfig().setThreadPoolSize(4); // 4 threads for parallel execution
+```
+
 ## Version History
 
-- **1.0.0-SNAPSHOT**: Initial release with basic workflow engine functionality
+- **1.0.0-SNAPSHOT**: Initial release with TaskFactory pattern, parallel/sequential execution, and comprehensive tutorial module
