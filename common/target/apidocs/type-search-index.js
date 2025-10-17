@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"com.zero2me.breezeflow.common","l":"LogFactory"},{"p":"com.zero2me.breezeflow.common","l":"ValidationUtils"}];updateSearchResults();
