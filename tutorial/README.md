@@ -2,8 +2,8 @@
 
 This module demonstrates a document processing workflow built on the BreezeFlow engine. It focuses on the real tasks present in this module and clarifies the distinction between Facts and the SessionContext.
 
-## Architecture   
-![alt text](https://github.com/tonytian2000/breezeflow/blob/main/tutorial/examplearc.png?raw=true)
+## Architecture  
+![alt text](https://github.com/tonytian2000/breezeflow/blob/main/tutorial/examplearc.png)
 
 ## Concepts
 
