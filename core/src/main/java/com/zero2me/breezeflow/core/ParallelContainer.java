@@ -41,9 +41,15 @@ public class ParallelContainer extends Task {
         }
 
         // Create thread pool
+        logger.info("Creating thread pool with size: {}", poolSize);
         ExecutorService executor = createThreadPool(poolSize);
         
         try {
+            logger.info("Starting parallel container ({}:{}) execution with {} tasks.", 
+                            getId(), getName(), tasks.size());
+            listener.notify(WorkflowEventType.TASK_STARTED, 
+                    String.format("Parallel container %s:%s started", getId(), getName()));
+                    
             // Submit all tasks to the thread pool
             List<Future<?>> futures = new ArrayList<>();
             for (Task task : tasks) {
@@ -68,7 +74,10 @@ public class ParallelContainer extends Task {
                     throw new RuntimeException("Parallel execution interrupted", e);
                 }
             }
-            
+
+            logger.info("Completed parallel container ({}:{}) execution.", getId(), getName());
+            listener.notify(WorkflowEventType.TASK_COMPLETED, 
+                    String.format("Parallel container %s:%s completed", getId(), getName()));
         } finally {
             // Shutdown the thread pool
             executor.shutdown();

@@ -10,5 +10,6 @@ public class DefaultWorkflowListener extends WorkflowListener {
   @Override
   protected void handle(WorkflowEventType event, String description) throws Exception {
     // do nothing
+    logger.info("got event: " + event + " description: " + description);
   }
 }

@@ -26,6 +26,15 @@ public class SequentialContainer extends Task {
 
     @Override
     public void invoke() {
+        if (tasks.isEmpty()) {
+            return;
+        }
+
+        logger.info("Starting sequential container ({}:{}) execution with {} tasks.", 
+                        getId(), getName(), tasks.size());
+        listener.notify(WorkflowEventType.TASK_STARTED, 
+                String.format("Sequential container %s:%s started", getId(), getName()));
+
         for (Task task : tasks) {
             try {
                 task.run();
@@ -34,6 +43,10 @@ public class SequentialContainer extends Task {
                 throw new RuntimeException("Sequential task execution failed for task: " + task.getId(), e);
             }
         }
+
+        logger.info("Completed sequential container ({}:{}) execution.", getId(), getName());
+        listener.notify(WorkflowEventType.TASK_COMPLETED, 
+                String.format("Sequential container %s:%s completed", getId(), getName()));
     }
 
     @Override
