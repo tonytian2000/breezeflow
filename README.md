@@ -25,12 +25,6 @@ BreezeFlow is a lightweight workflow engine library that provides a clean API fo
 
 ## Module Structure
 
-### Common Module (`breezeflow-common`)
-Contains shared utilities and common functionality:
-- `BreezeFlowLoggerFactory`: Centralized logger creation
-- `LogFactory`: Logger factory for consistent logging
-- `ValidationUtils`: Common validation utilities
-
 ### Core Module (`breezeflow-core`)
 Contains the main workflow engine implementation:
 - `Workflow`: Main workflow class with task management
@@ -53,14 +47,14 @@ Comprehensive examples and tutorials:
 
 ## Quick Start
 
-### Adding as a Dependency (NOT YET READY, PLEASE WAIT)
+### Adding as a Dependency (NOT SUPPORT YET, PLEASE WAIT!!!)
 
 Add the following to your `pom.xml`:
 
 ```xml
 <dependency>
-    <groupId>org.zero2me.breezeflow</groupId>
-    <artifactId>breezeflow-core</artifactId>
+    <groupId>org.zero2me</groupId>
+    <artifactId>breezeflow</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
