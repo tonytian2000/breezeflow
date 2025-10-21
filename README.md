@@ -6,6 +6,9 @@ A lightweight, flexible workflow engine for Java applications, built with Maven 
 
 BreezeFlow is a lightweight workflow engine library that provides a clean API for defining and executing workflows. It features a controlled task creation pattern through TaskFactory and supports both sequential and parallel task execution. The library enables you to build complex data processing pipelines with clear separation of concerns, data sharing between tasks, and flexible execution patterns. It is designed to be used as a dependency in other Java projects and supports cloud artifactory deployment.
 
+## Architecture   
+![alt text](https://github.com/tonytian2000/breezeflow/blob/main/workflow.png?raw=true)
+
 ## Features
 
 - **Multi-module Architecture**: Clean separation of concerns with `common`, `core`, and `tutorial` modules
