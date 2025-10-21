@@ -5,17 +5,16 @@
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.zero2me.breezeflow</groupId>
-    <artifactId>breezeflow-parent</artifactId>
+    <groupId>org.zero2me</groupId>
+    <artifactId>breezeflow</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-
     <name>BreezeFlow Parent</name>
     <description>A multi-module Java library for workflow management</description>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         
@@ -40,6 +39,7 @@
 
     <dependencyManagement>
         <dependencies>
+            
             <!-- SLF4J API -->
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -88,8 +88,8 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven.compiler.plugin.version}</version>
                     <configuration>
-                        <source>17</source>
-                        <target>17</target>
+                        <source>11</source>
+                        <target>11</target>
                         <encoding>UTF-8</encoding>
                     </configuration>
                 </plugin>
@@ -113,8 +113,8 @@
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>${maven.javadoc.plugin.version}</version>
                     <configuration>
-                        <source>17</source>
-                        <target>17</target>
+                        <source>11</source>
+                        <target>11</target>
                         <encoding>UTF-8</encoding>
                         <docencoding>UTF-8</docencoding>
                         <charset>UTF-8</charset>

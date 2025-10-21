@@ -1,21 +1,23 @@
 # BreezeFlow
 
-A multi-module Java library for workflow management and execution, built with Maven and designed for JDK 17.
+A lightweight, flexible workflow engine for Java applications, built with Maven and designed for JDK 11.
 
 ## Overview
 
-BreezeFlow is a lightweight workflow engine library that provides a clean API for defining and executing workflows. It features a controlled task creation pattern through TaskFactory and supports both sequential and parallel task execution. The library is designed to be used as a dependency in other Java projects and supports cloud artifactory deployment.
+BreezeFlow is a lightweight workflow engine library that provides a clean API for defining and executing workflows. It features a controlled task creation pattern through TaskFactory and supports both sequential and parallel task execution. The library enables you to build complex data processing pipelines with clear separation of concerns, data sharing between tasks, and flexible execution patterns. It is designed to be used as a dependency in other Java projects and supports cloud artifactory deployment.
 
 ## Features
 
 - **Multi-module Architecture**: Clean separation of concerns with `common`, `core`, and `tutorial` modules
-- **JDK 17 Support**: Built and tested with Java 17
+- **JDK 11 Support**: Built and tested with Java 11
 - **SLF4J Logging**: Comprehensive logging with SLF4J and Logback
 - **TaskFactory Pattern**: Controlled task creation and dependency injection
 - **Parallel & Sequential Execution**: Support for both parallel and sequential task execution
 - **Thread Pool Management**: Configurable thread pools for parallel execution
 - **Extensible Workflow System**: Easy-to-extend workflow and task framework
-- **Comprehensive Tutorials**: Complete tutorial module with examples
+- **Data Sharing Mechanism**: Facts for task completion flags and SessionContext for data exchange
+- **Task Execution Pattern**: Consistent preCheck() and invoke() pattern for all tasks
+- **Comprehensive Tutorials**: Complete tutorial module with real-world examples
 - **Cloud Ready**: Configured for deployment to cloud artifactory repositories
 
 ## Module Structure
@@ -34,15 +36,16 @@ Contains the main workflow engine implementation:
 - `ParallelContainer`: Parallel task execution container
 - `SequentialContainer`: Sequential task execution container
 - `SessionConfig`: Configuration management including thread pool settings
-- `Facts`: Data sharing mechanism between tasks
+- `Facts`: Task execution condition variable
+- `SessionContext`: Data sharing mechanism between tasks
 - `WorkflowListener`: Event notification system
 
 ### Tutorial Module (`breezeflow-tutorial`)
 Comprehensive examples and tutorials:
-- Task examples (SimpleTask, DataProcessingTask, ValidationTask)
+- Document processing workflow example
+- Task examples (ReadDocumentTask, CalculateWordCountTask, FindKeywordCountTask, etc.)
 - Container examples (ParallelContainer, SequentialContainer)
 - Workflow examples and patterns
-- Interactive tutorial runner
 - Best practices and usage patterns
 
 ## Quick Start
@@ -53,7 +56,7 @@ Add the following to your `pom.xml`:
 
 ```xml
 <dependency>
-    <groupId>com.zero2me.breezeflow</groupId>
+    <groupId>org.zero2me.breezeflow</groupId>
     <artifactId>breezeflow-core</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
@@ -62,7 +65,7 @@ Add the following to your `pom.xml`:
 ### Basic Usage
 
 ```java
-import com.zero2me.breezeflow.core.*;
+import org.zero2me.breezeflow.core.*;
 
 // Create a workflow
 Workflow workflow = new Workflow();
@@ -85,7 +88,7 @@ workflow.run();
 ### Advanced Usage with Parallel Execution
 
 ```java
-import com.zero2me.breezeflow.core.*;
+import org.zero2me.breezeflow.core.*;
 
 // Create workflow and configure thread pool
 Workflow workflow = new Workflow();
@@ -111,7 +114,7 @@ workflow.run();
 ## Building the Project
 
 ### Prerequisites
-- JDK 17 or higher
+- JDK 11 or higher
 - Maven 3.6 or higher
 
 ### Build Commands
@@ -266,22 +269,37 @@ The project includes a comprehensive tutorial module with examples and best prac
 ### Running Tutorials
 
 ```bash
-# Run interactive tutorial
-mvn exec:java -Dexec.mainClass="com.zero2me.breezeflow.tutorial.TutorialRunner"
+# Build tutorial module
+mvn -q -f tutorial/pom.xml clean compile
 
-# Run specific examples
-mvn exec:java -Dexec.mainClass="com.zero2me.breezeflow.tutorial.TutorialRunner" -Dexec.args="tasks"
-mvn exec:java -Dexec.mainClass="com.zero2me.breezeflow.tutorial.TutorialRunner" -Dexec.args="parallel"
-mvn exec:java -Dexec.mainClass="com.zero2me.breezeflow.tutorial.TutorialRunner" -Dexec.args="sequential"
-mvn exec:java -Dexec.mainClass="com.zero2me.breezeflow.tutorial.TutorialRunner" -Dexec.args="workflow"
+# Run demo workflow
+mvn -q -f tutorial/pom.xml exec:java -Dexec.mainClass="org.zero2me.breezeflow.tutorial.DemoWorkflow"
+
+# Package and run JAR
+mvn -q -f tutorial/pom.xml clean package
+java -jar tutorial/target/breezeflow-tutorial-1.0.0-SNAPSHOT.jar
+```
+
+### Demo Workflow Example
+
+The tutorial includes a document processing workflow that demonstrates key BreezeFlow concepts:
+
+```text
+Root SequentialContainer
+  ├─ read_document (ReadDocumentTask)
+  ├─ analyze_document (ParallelContainer)
+  │    ├─ calc_word_count (CalculateWordCountTask)
+  │    └─ find_keyword_count (FindKeywordCountTask)
+  └─ post_processing (SequentialContainer)
+       ├─ print_summary (PrintSummaryTask)
+       └─ send_email (SendEmailTask)
 ```
 
 ### Tutorial Features
 
-- **Task Examples**: SimpleTask, DataProcessingTask, ValidationTask
+- **Task Examples**: ReadDocumentTask, CalculateWordCountTask, FindKeywordCountTask, etc.
 - **Container Examples**: ParallelContainer and SequentialContainer usage
-- **Workflow Examples**: Basic and advanced workflow patterns
-- **Interactive Runner**: Menu-driven example execution
+- **Workflow Examples**: Document processing workflow with parallel analysis
 - **Best Practices**: Proper usage patterns and common pitfalls
 
 ## Testing
@@ -327,25 +345,70 @@ SimpleTask task = taskFactory.buildTask(SimpleTask.class, "MyTask");
 // SimpleTask task = new SimpleTask();
 ```
 
-### Facts Management
-Facts provide a way to share data between tasks:
-- Input data for tasks
-- Output results from tasks
-- Configuration parameters
-- Validation results
+### Task Execution Pattern
+Each task implements two key methods:
+- `preCheck()`: Guard conditions that determine if the task should execute
+- `invoke()`: Main logic that performs the task's work
 
 ```java
-// Create workflow and get facts
-Workflow workflow = new Workflow();
-Facts facts = workflow.getFacts();
+public class MyCustomTask extends Task {
+    @Override
+    protected boolean preCheck() {
+        // Check if required facts are set
+        return facts.get("PREREQUISITE_TASK_DONE") == Boolean.TRUE;
+    }
+    
+    @Override
+    protected void invoke() {
+        // Get data from session context
+        String input = (String) sessionContext.get("INPUT_DATA");
+        
+        // Process data
+        String result = processData(input);
+        
+        // Store result in session context
+        sessionContext.put("PROCESSED_RESULT", result);
+        
+        // Set fact indicating completion
+        facts.put("MY_TASK_DONE", Boolean.TRUE);
+    }
+}
+```
 
-// Set input data
-facts.put("numbers", Arrays.asList(1, 2, 3, 4, 5));
-facts.put("email", "user@example.com");
+### Data Sharing Mechanisms
 
-// Get results
-Number sum = facts.get("sum");
-Map<String, Object> validation = facts.get("emailValidation");
+BreezeFlow provides two complementary mechanisms for sharing data between tasks:
+
+#### Facts
+Lightweight boolean flags used to indicate task completion or conditional readiness:
+- Downstream tasks check facts in their `preCheck()` to decide whether they should run
+- Typically boolean values with naming convention `<DOMAIN>_<ACTION>_DONE`
+- Used for workflow control flow and task dependencies
+
+```java
+// Set a fact indicating task completion
+facts.put("DOC_PROCESS_DONE", Boolean.TRUE);
+
+// Check a fact in preCheck()
+if (facts.get("DOC_PROCESS_DONE") != Boolean.TRUE) {
+    return false; // Skip execution
+}
+```
+
+#### SessionContext
+Key/value store for input and output data that tasks produce and consume:
+- Stores actual data values (document content, counts, processing results)
+- Used for passing data between tasks
+- Can store any serializable object
+
+```java
+// Store data in session context
+sessionContext.put("DOC_CONTENT", documentText);
+sessionContext.put("DOC_CONTENT_COUNT", wordCount);
+
+// Retrieve data from session context
+String content = (String) sessionContext.get("DOC_CONTENT");
+Integer count = (Integer) sessionContext.get("DOC_CONTENT_COUNT");
 ```
 
 ### Thread Pool Configuration
@@ -358,6 +421,17 @@ ParallelContainer uses configurable thread pools:
 Workflow workflow = new Workflow();
 workflow.getSessionConfig().setThreadPoolSize(4); // 4 threads for parallel execution
 ```
+
+## Best Practices
+
+1. Keep `preCheck()` side-effect free except for setting failure facts (if desired).
+2. Only set facts that represent completion or gating conditions.
+3. Use descriptive variable keys; group related metrics with consistent prefixes.
+4. Avoid storing large raw data redundantly—use a single source variable.
+5. Limit logging of large content; prefer length summaries.
+6. Keep tasks single-purpose; compose with containers for complexity.
+7. Fail fast in `invoke()` if critical variables are unexpectedly null (after passing `preCheck()`).
+8. Consider adding integration tests covering full workflow execution.
 
 ## Version History
 

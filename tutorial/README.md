@@ -1,325 +1,171 @@
 # BreezeFlow Tutorial Module
 
-This module provides comprehensive examples and tutorials for using the BreezeFlow workflow engine. It demonstrates how to create tasks, containers, and workflows using the TaskFactory pattern.
+This module demonstrates a document processing workflow built on the BreezeFlow engine. It focuses on the real tasks present in this module and clarifies the distinction between Facts and the SessionContext.
 
-## Overview
+## Concepts
 
-The tutorial module includes:
+- **Facts**: Lightweight boolean (or simple state) flags used to indicate task completion or conditional readiness. Downstream tasks read facts in their `preCheck()` to decide whether they should run. Example facts: `DOC_PROCESS_DONE`, `DOC_CAL_WORD_COUNT_DONE`, `FIND_KEYWORD_DONE`, `PRINT_SUMMARY_DONE`, `EMAIL_SENT_DONE`.
+- **SessionContext**: Key/value store for input and output data that tasks produce and consume (e.g. raw document content, counts, summary text). Example variables: `DOC_CONTENT`, `DOC_CONTENT_COUNT`, `SEARCH_KEY`, `FIND_KEYWORD_COUNT`, `TASK_SUMMARY`.
+- **Task Execution Pattern**: Each task implements `preCheck()` (guard conditions) and `invoke()` (main logic). If `preCheck()` returns false the task skips execution logic.
+- **Containers**: `SequentialContainer` executes tasks in order; `ParallelContainer` executes child tasks concurrently using a thread pool defined by `SessionConfig`.
 
-- **Task Examples**: SimpleTask, DataProcessingTask, ValidationTask
-- **Workflow Examples**: Basic workflow creation and execution patterns
-- **Best Practices**: Proper usage patterns and common pitfalls
-- **Interactive Examples**: Runnable code examples with detailed explanations
+## Available Tasks
 
-## Quick Start
+| Task | Responsibility | Sets Facts | Produces Session Variables | Consumes |
+|------|----------------|------------|----------------------------|----------|
+| ReadDocumentTask | Read `demo.txt` from classpath | `DOC_PROCESS_DONE=true` | `DOC_CONTENT` | — |
+| CalculateWordCountTask | Count words in document | `DOC_CAL_WORD_COUNT_DONE=true` | `DOC_CONTENT_COUNT` | `DOC_CONTENT`, fact `DOC_PROCESS_DONE` |
+| FindKeywordCountTask | Count keyword occurrences | `FIND_KEYWORD_DONE=true` | `FIND_KEYWORD_COUNT` | `DOC_CONTENT`, `SEARCH_KEY`, fact `DOC_PROCESS_DONE` |
+| PrintSummaryTask | Build and persist summary text | `PRINT_SUMMARY_DONE=true` | `TASK_SUMMARY` | `DOC_CONTENT_COUNT`, `FIND_KEYWORD_COUNT`, `SEARCH_KEY`, facts from analysis |
+| SendEmailTask | Simulate sending summary (log) | `EMAIL_SENT_DONE=true/false` | — (uses existing) | `TASK_SUMMARY`, fact `PRINT_SUMMARY_DONE` |
 
-### Running the Tutorial
+## DemoWorkflow
 
-1. **Build the project**:
-   ```bash
-   mvn clean compile
-   ```
+Workflow structure:
 
-2. **Run individual examples**:
-   ```bash
-   # Run SimpleWorkflowExample
-   mvn exec:java -Dexec.mainClass="com.zero2me.breezeflow.tutorial.workflows.SimpleWorkflowExample"
-   
-   # Run task examples directly
-   mvn exec:java -Dexec.mainClass="com.zero2me.breezeflow.tutorial.tasks.SimpleTask"
-   ```
-
-3. **Create an executable JAR and run**:
-   ```bash
-   mvn clean package
-   java -jar target/breezeflow-tutorial-1.0.0-SNAPSHOT.jar
-   ```
-
-
-## Examples Overview
-
-### 1. Task Examples
-
-#### SimpleTask
-A basic task that demonstrates:
-- Configurable message output
-- Configurable execution delay
-- Configurable failure simulation
-- Proper logging and error handling
-
-```java
-SimpleTask task = taskFactory.buildTask(SimpleTask.class, "MyTask");
-task.setMessage("Hello World");
-task.setDelayMs(100);
-task.run();
+```text
+Root SequentialContainer
+  ├─ read_document (ReadDocumentTask)
+  ├─ analyze_document (ParallelContainer)
+  │    ├─ calc_word_count (CalculateWordCountTask)
+  │    └─ find_keyword_count (FindKeywordCountTask)
+  └─ post_processing (SequentialContainer)
+       ├─ print_summary (PrintSummaryTask)
+       └─ send_email (SendEmailTask)
 ```
 
-#### DataProcessingTask
-A more complex task that demonstrates:
-- Data processing operations (SUM, AVERAGE, MAX, MIN, COUNT)
-- Facts integration for input/output
-- Configurable operation types
+Execution phases:
 
-```java
-DataProcessingTask task = taskFactory.buildTask(DataProcessingTask.class, "SumTask");
-task.setOperation(DataProcessingTask.Operation.SUM);
-task.setInputKey("numbers");
-task.setOutputKey("result");
-task.run();
+1. Read & flag: load file, set `DOC_PROCESS_DONE`.
+2. Parallel analysis: word and keyword counts (facts set upon completion).
+3. Summary: build `TASK_SUMMARY`, set `PRINT_SUMMARY_DONE`.
+4. Email simulation: log send, set `EMAIL_SENT_DONE`.
+
+## Running
+
+Build tutorial module:
+
+```bash
+mvn -q -f tutorial/pom.xml clean compile
 ```
 
-#### ValidationTask
-A validation task that demonstrates:
-- Multiple validation rules (NOT_NULL, NOT_EMPTY, POSITIVE_NUMBER, EMAIL_FORMAT, MIN_LENGTH)
-- Facts integration for validation data
-- Structured validation results
+Run demo workflow:
 
-```java
-ValidationTask task = taskFactory.buildTask(ValidationTask.class, "EmailValidation");
-task.setInputKey("email");
-task.setOutputKey("validation");
-task.setRule(ValidationTask.ValidationRule.EMAIL_FORMAT);
-task.run();
+```bash
+mvn -q -f tutorial/pom.xml exec:java -Dexec.mainClass="org.zero2me.breezeflow.tutorial.DemoWorkflow"
 ```
 
-### 2. Workflow Examples
+Default keyword is set in `DemoWorkflow.main` (`SEARCH_KEY="license"`). Change by editing the main method or setting a different variable before invoking `run()`.
 
-#### SimpleWorkflowExample
-Demonstrates workflow creation and execution:
-- Task addition to workflows using TaskFactory
-- Sequential execution within workflows
-- Facts management across tasks
-- Workflow lifecycle management
-- Proper error handling
+Package and run JAR:
 
-```java
-// Create workflow and get TaskFactory
-Workflow workflow = new Workflow();
-TaskFactory taskFactory = workflow.getTaskFactory();
-
-// Add tasks to workflow
-workflow.addTask(SimpleTask.class, "Step1");
-workflow.addTask(SimpleTask.class, "Step2");
-workflow.addTask(SimpleTask.class, "Step3");
-
-// Execute workflow
-workflow.run();
+```bash
+mvn -q -f tutorial/pom.xml clean package
+java -jar tutorial/target/breezeflow-tutorial-1.0.0-SNAPSHOT.jar
 ```
 
-#### Advanced Workflow with Custom Tasks
-Demonstrates more complex workflow patterns:
-- Custom task configuration
-- Data processing workflows
-- Validation workflows
-- Mixed task types
+## Data Flow Summary
+
+| Variable | Source Task | Purpose | Downstream Users |
+|----------|-------------|---------|------------------|
+| `DOC_CONTENT` | ReadDocumentTask | Raw document text | Word/Keyword tasks |
+| `DOC_CONTENT_COUNT` | CalculateWordCountTask | Total words | PrintSummaryTask |
+| `SEARCH_KEY` | Seeded in main | Keyword to count | FindKeywordCountTask, PrintSummaryTask |
+| `FIND_KEYWORD_COUNT` | FindKeywordCountTask | Occurrence count | PrintSummaryTask |
+| `TASK_SUMMARY` | PrintSummaryTask | Formatted summary | SendEmailTask |
+
+| Fact | Set By | Meaning | Checked By |
+|------|--------|---------|------------|
+| `DOC_PROCESS_DONE` | ReadDocumentTask | Document content available | CalculateWordCountTask, FindKeywordCountTask |
+| `DOC_CAL_WORD_COUNT_DONE` | CalculateWordCountTask | Word count computed | PrintSummaryTask |
+| `FIND_KEYWORD_DONE` | FindKeywordCountTask | Keyword count computed | PrintSummaryTask |
+| `PRINT_SUMMARY_DONE` | PrintSummaryTask | Summary ready | SendEmailTask |
+| `EMAIL_SENT_DONE` | SendEmailTask | Email simulation performed | (terminal) |
+
+## Code Excerpt
 
 ```java
-Workflow workflow = new Workflow();
-TaskFactory taskFactory = workflow.getTaskFactory();
-
-// Configure and add custom tasks
-SimpleTask task1 = taskFactory.buildTask(SimpleTask.class, "CustomTask1");
-task1.setMessage("Processing data...");
-workflow.addTask(task1);
-
-DataProcessingTask task2 = taskFactory.buildTask(DataProcessingTask.class, "DataProcessor");
-task2.setOperation(DataProcessingTask.Operation.SUM);
-workflow.addTask(task2);
-
-workflow.run();
-```
-
-## Key Concepts
-
-### TaskFactory Pattern
-All tasks must be created through the TaskFactory obtained from a Workflow instance to ensure:
-- Proper dependency injection
-- Consistent configuration
-- Controlled instantiation
-- Error handling
-
-```java
-// ✅ Correct - Get TaskFactory from Workflow
-Workflow workflow = new Workflow();
-TaskFactory taskFactory = workflow.getTaskFactory();
-SimpleTask task = taskFactory.buildTask(SimpleTask.class, "MyTask");
-
-// ❌ Incorrect - Direct TaskFactory instantiation (will cause compilation error)
-// TaskFactory taskFactory = new TaskFactory(facts, sessionContext, sessionConfig, listener); // Compilation error!
-
-// ❌ Incorrect - Direct task instantiation (will cause compilation error)
-// SimpleTask task = new SimpleTask(); // Compilation error!
-```
-
-### Facts Management
-Facts provide a way to share data between tasks:
-- Input data for tasks
-- Output results from tasks
-- Configuration parameters
-- Validation results
-
-```java
-// Create workflow and get facts
-Workflow workflow = new Workflow();
-Facts facts = workflow.getFacts();
-
-// Set input data
-facts.put("numbers", Arrays.asList(1, 2, 3, 4, 5));
-facts.put("email", "user@example.com");
-
-// Get results
-Number sum = facts.get("sum");
-Map<String, Object> validation = facts.get("emailValidation");
-```
-
-### Thread Pool Configuration
-ParallelContainer uses configurable thread pools:
-- Set via SessionConfig
-- Override via constructor
-- Automatic fallback to available processors
-
-```java
-Workflow workflow = new Workflow();
-workflow.getSessionConfig().setThreadPoolSize(4); // 4 threads for parallel execution
-```
-
-### Workflow Extension
-The Workflow class supports extension for custom workflow types:
-
-```java
-public class MyCustomWorkflow extends Workflow {
-    @Override
-    public void buildWorkflow() {
-        // Override this method to build your custom workflow
-        TaskFactory taskFactory = getTaskFactory();
-        
-        // Add your custom workflow logic here
-        addTask(taskFactory.buildTask(MyCustomTask.class, "CustomTask1"));
-        addTask(taskFactory.buildTask(MyCustomTask.class, "CustomTask2"));
-    }
+public void buildWorkflow() {
+    rootContainer.addTask(taskFactory.buildTask(ReadDocumentTask.class, "read_document"));
+    ParallelContainer parallel = taskFactory.buildTask(ParallelContainer.class, "analyze_document");
+    parallel.addTask(taskFactory.buildTask(CalculateWordCountTask.class, "calc_word_count"));
+    parallel.addTask(taskFactory.buildTask(FindKeywordCountTask.class, "find_keyword_count"));
+    rootContainer.addTask(parallel);
+    SequentialContainer post = taskFactory.buildTask(SequentialContainer.class, "post_processing");
+    post.addTask(taskFactory.buildTask(PrintSummaryTask.class, "print_summary"));
+    post.addTask(taskFactory.buildTask(SendEmailTask.class, "send_email"));
+    rootContainer.addTask(post);
 }
 ```
 
-### Multiple Ways to Add Tasks
-The Workflow class provides flexibility in how tasks are added:
+## Sample Output (Truncated)
 
-```java
-Workflow workflow = new Workflow();
-TaskFactory taskFactory = workflow.getTaskFactory();
-
-// Method 1: Add task by class and name (creates task automatically)
-workflow.addTask(SimpleTask.class, "Task1");
-
-// Method 2: Add pre-configured task instance
-SimpleTask task = taskFactory.buildTask(SimpleTask.class, "Task2");
-task.setMessage("Custom message");
-workflow.addTask(task);
+```text
+... ReadDocumentTask : resource 'demo.txt' read successfully (8866 bytes)
+... CalculateWordCountTask : calculated word count 1210
+... FindKeywordCountTask : keyword 'license' occurred 22 times
+... PrintSummaryTask :
+=== Document Processing Summary ===
+Total Word Count       : 1210
+Search Keyword         : license
+Keyword Occurrence Count: 22
+===================================
+... SendEmailTask : sending email to test@email.com with summary content length 160
 ```
 
-### Creating Custom Tasks
-To create your own task types, extend the Task class:
+## Extending the Demo
 
-```java
-public class MyCustomTask extends Task {
-    private String customProperty;
-    
-    public void setCustomProperty(String value) {
-        this.customProperty = value;
-    }
-    
-    @Override
-    protected boolean preCheck() {
-        // Add validation logic here
-        if (customProperty == null || customProperty.isEmpty()) {
-            logger.warn("Custom property is not set");
-            return false;
-        }
-        return true;
-    }
-    
-    @Override
-    protected void invoke() {
-        // Add your task logic here
-        logger.info("Executing custom task with property: {}", customProperty);
-        
-        // Example: Process data and store result in facts
-        String result = "Processed: " + customProperty;
-        facts.put("customResult", result);
-    }
-}
-```
+Add new analysis by creating a Task subclass:
 
-Then use it in your workflow:
-
-```java
-Workflow workflow = new Workflow();
-TaskFactory taskFactory = workflow.getTaskFactory();
-
-MyCustomTask customTask = taskFactory.buildTask(MyCustomTask.class, "MyCustomTask");
-customTask.setCustomProperty("Hello World");
-workflow.addTask(customTask);
-
-workflow.run();
-```
+1. Define `preCheck()` to guard on required facts/variables.
+2. Perform computation in `invoke()`.
+3. Store results in `SessionContext` and set a completion fact.
+4. Attach task to existing parallel or post-processing container.
+5. Optionally enhance `PrintSummaryTask` to include new metrics.
 
 ## Project Structure
 
-```
+```text
 tutorial/
-├── src/main/java/com/zero2me/breezeflow/tutorial/
-│   ├── tasks/
-│   │   ├── SimpleTask.java              # Basic task example
-│   │   ├── DataProcessingTask.java      # Data processing task example
-│   │   └── ValidationTask.java          # Validation task example
-│   └── workflows/
-│       └── SimpleWorkflowExample.java   # Basic workflow example
-├── pom.xml                              # Maven configuration
-└── README.md                            # This file
+  ├── src/main/java/com/zero2me/breezeflow/tutorial/
+  │   ├── tasks/
+  │   │   ├── ReadDocumentTask.java
+  │   │   ├── CalculateWordCountTask.java
+  │   │   ├── FindKeywordCountTask.java
+  │   │   ├── PrintSummaryTask.java
+  │   │   └── SendEmailTask.java
+  │   └── DemoWorkflow.java
+  ├── pom.xml
+  └── README.md
 ```
-
-## Dependencies
-
-The tutorial module depends on:
-- `breezeflow-core`: Core workflow engine
-- `breezeflow-common`: Common utilities
-- `slf4j-api`: Logging API
-- `logback-classic`: Logging implementation
-- `lombok`: Code generation
-- `junit-jupiter`: Testing framework
 
 ## Best Practices
 
-1. **Always get TaskFactory from Workflow**: Never instantiate TaskFactory or tasks directly
-2. **Configure tasks properly**: Set all required parameters before execution
-3. **Handle exceptions**: Wrap task execution in try-catch blocks
-4. **Use appropriate execution patterns**: Choose parallel vs sequential based on requirements
-5. **Manage facts carefully**: Ensure proper data flow between tasks
-6. **Configure thread pools**: Set appropriate thread pool sizes for parallel execution
-7. **Extend Task class properly**: Override both `preCheck()` and `invoke()` methods
-8. **Use meaningful task names**: Provide descriptive names for better debugging
+1. Keep `preCheck()` side-effect free except for setting failure facts (if desired).
+2. Only set facts that represent completion or gating conditions.
+3. Use descriptive variable keys; group related metrics with consistent prefixes.
+4. Avoid storing large raw data redundantly—use a single source variable (e.g., `DOC_CONTENT`).
+5. Limit logging of large content; prefer length summaries.
+6. Keep tasks single-purpose; compose with containers for complexity.
+7. Fail fast in `invoke()` if critical variables are unexpectedly null (after passing `preCheck()`).
+8. Consider adding integration tests covering full workflow execution.
 
 ## Troubleshooting
 
-### Common Issues
-
-1. **Compilation Errors**: Ensure you're getting TaskFactory from Workflow instance
-2. **Runtime Errors**: Check that all required facts are set before task execution
-3. **Performance Issues**: Consider using parallel execution for independent tasks
-4. **Memory Issues**: Monitor thread pool sizes and task complexity
-
-### Getting Help
-
-- Check the example code in this module
-- Review the core module documentation
-- Examine the task examples for usage patterns
-- Run the individual example classes to see them in action
-- Check the main project README for comprehensive documentation
+| Symptom | Likely Cause | Resolution |
+|---------|--------------|------------|
+| Task skipped | `preCheck()` returned false | Ensure required fact/variable produced by prior task |
+| Word/keyword counts zero | Wrong `SEARCH_KEY` or empty content | Verify `SEARCH_KEY` value and document load |
+| Summary missing | Facts not set by analysis tasks | Check logs for warnings from analysis tasks |
+| Email not "sent" | `PRINT_SUMMARY_DONE` false or no `TASK_SUMMARY` | Confirm summary task ran successfully |
 
 ## Contributing
 
-When adding new examples:
-1. Follow the existing naming conventions
-2. Include comprehensive documentation
-3. Add proper error handling
-4. Update this README with new examples
-5. Test all examples before committing
+1. Add new tasks under `tutorial/tasks` with clear naming.
+2. Update this README’s tables for new facts/variables.
+3. Include unit tests for `preCheck()` and `invoke()` logic.
+4. Keep public API changes in core modules documented separately.
+5. Maintain consistency in fact naming: `<DOMAIN>_<ACTION>_DONE`.
+
+---
+Last updated: 2025-10-21

@@ -1,0 +1,136 @@
+Contributing to open source projects is widely recognized as a vital engine for software innovation, technical growth, and professional development. At eBay, open source engagement is actively encouraged—both internally (between teams) and externally (with the broader software community)—provided all contributions follow established policies, legal guardrails, and best practices. This guide presents a comprehensive, company-aligned approach for eBay employees looking to contribute to open source projects, including essential procedures, compliance requirements, and tips to maximize your impact.
+
+---
+
+### Why Contribute to Open Source?
+
+Open source contribution benefits eBay in several ways:
+- Strengthening technical skill and exposure for individuals and teams.
+- Growing eBay’s reputation for technical leadership.
+- Enhancing reuse, reducing development cost, and fostering collaboration both inside and outside the enterprise.
+- Stimulating innovation by learning from, and improving, widely-used projects.
+
+eBay’s OSS program recognizes these advantages and offers incentives such as contributor jackets, badges, mentions in spotlight articles, and gift cards to encourage broad participation.
+
+---
+
+### Types of Open Source Contributions
+
+#### 1. “Outbound” Contributions
+When you contribute code, documentation, designs, or other artifacts to a project owned by the global open source community.
+
+#### 2. “Inbound” Participation
+When you use open source software within eBay’s products or platforms, adapting it for internal needs, sometimes making improvements and fixes.
+
+#### 3. “Internal Open Source”
+Many eBay projects follow open source-like models—meritocratic management, open participation, transparent decision-making—within the company firewall. Employees can initiate, join, and contribute to these projects as they would in external communities.
+
+---
+
+### Step-by-Step Guide for Contributing
+
+#### 1. Familiarize Yourself with eBay’s Open Source Policies
+
+All contributions must comply with eBay’s OSS license policies and code of conduct. Breaches could lead to warnings or loss of participation privilege.
+
+- Access the “Open Source at eBay” internal site for the latest guidelines, FAQs, whitelist/blacklist of licenses, and relevant Slack channels.
+- Consult Legal and InfoSec teams on any questions or grey areas, especially around licensing, patent rights, and data exposure.
+
+#### 2. Decide the Type of Contribution
+
+- Are you releasing a new project (outbound)? Enhancing an existing external repo? Fixing an internal shared library?
+- Ensure your intended contribution aligns with eBay’s business interests, IP protection, and confidentiality standards.
+- If you plan to share anything that’s not already public, secure clearance to avoid risk to company trade secrets.
+
+#### 3. Find the Right Project and Community
+
+- Identify projects (internal/external) with active user bases, communication channels, and documented contributor guidelines.
+- For internal contributions, connect via eBay’s project directories or OSS Slack spaces.
+- To join external public projects, check their GitHub or relevant repositories for “How to Contribute,” issue trackers, and forums.
+
+#### 4. Get Approval (When Required)
+
+For outbound projects or code releases:
+- **Propose the Contribution:** Submit your plan (e.g., code, documentation, bug fix, feature) for review through eBay’s internal OSS approval workflow. This involves filling out forms about licensing, intended use, and possible risks.
+- **Legal and Security Review:** The proposal will be scrutinized for license compliance, export restrictions, patent implications, and data sensitivity. Legal experts are available for guidance.
+- **Leadership Endorsement:** Your manager or team lead may need to sign off on the high-level purpose and resource impacts.
+- **Approval & Publication:** Upon receiving clearance, you can contribute or publish the code—using officially supported accounts and following eBay’s OSS documentation standards.
+
+For internal projects, usually no external legal review is needed, but you should follow team/project governance and eBay’s policies.
+
+#### 5. Prepare Your Contribution
+
+- **Coding Standards:** Adhere to project-specific formatting, documentation, and commit conventions.
+- **Testing:** Write and run tests for your changes. Confirm impact on existing functionality and integration points.
+- **Documentation:** Update READMEs, guides, and usage notes for any new modules or APIs. Good documentation accelerates adoption and reuse.
+- **Access Controls:** When contributing internally, safeguard system configuration, authentication tokens, or sensitive business logic.
+
+#### 6. Submit Your Work
+
+- **External Projects:** Fork the repository, make your changes, test them locally, and submit a pull request (PR) following community contribution guidelines.
+- **Internal Projects:** Clone/pull from internal version control (e.g., GitHub Enterprise, GitLab), ensure CI/CD pipelines pass, and initiate merge requests.
+- **Communication:** Introduce yourself to the community. Explain what and why you’re contributing—often in PR descriptions, mailing lists, or chat channels.
+
+#### 7. Respond and Iterate
+
+- Address comments and requests for changes from maintainers or reviewers.
+- Refactor code if needed and resubmit your pull request.
+- Share updates within eBay’s internal spaces to foster broader learning and engagement.
+
+#### 8. Post-Contribution: Recognition and Engagement
+
+- Notify the eBay OSS program about your completed contribution for recognition and tracking.
+- Update your internal profile with new badges and share your involvement in spotlight channels.
+- Stay engaged with project communities, participate in discussions, and mentor new contributors where appropriate.
+
+---
+
+### Legal and Compliance Considerations
+
+eBay leverages dedicated teams to safeguard legal and security obligations regarding open source:
+
+- Always use approved licenses (for outbound code) and follow eBay’s license policy when integrating inbound open source.
+- Avoid publishing any non-public data, proprietary algorithms, or sensitive configurations unless explicitly authorized.
+- Respect contributor licensing agreements and intellectual property notices in all code you touch.
+- If uncertain, contact Legal or run proposals through OSS program contacts.
+
+---
+
+### Best Practices for Successful Open Source Contribution
+
+- **Start Small:** Begin with bug fixes, documentation edits, or small utilities to understand project flow.
+- **Be Respectful:** Communicate professionally with maintainers. Recognize feedback as part of the process.
+- **Automate Testing:** Include unit/integration tests to accelerate acceptance and build trust.
+- **Document Your Work:** Clear, concise documentation is as valuable as code.
+- **Champion Inclusion:** Support diversity and inclusion in open source spaces. Follow eBay’s code of conduct rigorously.
+- **Advance Continuously:** As you gain experience, take on bigger tasks—feature development, architectural proposals, or project maintenance.
+- **Promote Knowledge Sharing:** Blog about your experience, present at meetups, and encourage colleagues to participate.
+
+---
+
+### Leveraging eBay’s OSS Support Resources
+
+- Browse the “Open Source at eBay” site for up-to-date instructions, FAQs, and contacts.
+- Join dedicated Slack channels for OSS discussions, troubleshooting, and peer mentoring.
+- Connect with legal and infosec teams for clarification on licensing or vulnerabilities.
+- Participate in internal workshops, hackathons, and contributor spotlights.
+
+---
+
+### Common Pitfalls and How to Avoid Them
+
+- **License Violations:** Double-check license compatibility before integrating code or contributing enhancements.
+- **Premature Disclosure:** Never publish trade secrets or regulated data; always seek approval for new outbound releases.
+- **Neglecting Community Norms:** Study project culture, etiquette, and governance before diving in.
+- **Ignoring Compliance Checks:** Use automated scanning tools and manual reviews to ensure compliance—internally and externally.
+- **Under-communicating:** Regularly communicate with your team and open source maintainers to ensure clarity and alignment.
+
+---
+
+### Conclusion
+
+Open source contribution is embedded in eBay’s technical DNA. Employees are supported and incentivized to participate, provided they uphold legal, ethical, and professional standards. By following the company’s structured processes, leveraging its internal resources, and applying industry best practices, you can make meaningful, recognized contributions to open source projects—helping both eBay and the global software community thrive.
+
+---
+
+Would you like a walkthrough of the internal OSS approval process or examples of successful open source contributions from your team?
