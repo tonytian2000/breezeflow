@@ -7,7 +7,7 @@
 
     <parent>
         <groupId>org.zero2me</groupId>
-        <artifactId>breezeflow</artifactId>
+        <artifactId>breezeflow-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
@@ -20,14 +20,7 @@
         <!-- BreezeFlow Core -->
         <dependency>
             <groupId>org.zero2me</groupId>
-            <artifactId>breezeflow-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <!-- BreezeFlow Common -->
-        <dependency>
-            <groupId>org.zero2me</groupId>
-            <artifactId>breezeflow-common</artifactId>
+            <artifactId>breezeflow</artifactId>
             <version>${project.version}</version>
         </dependency>
 

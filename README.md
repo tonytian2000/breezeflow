@@ -8,7 +8,7 @@ BreezeFlow is a lightweight workflow engine library that provides a clean API fo
 
 ## Features
 
-- **Multi-module Architecture**: Clean separation of concerns with `common`, `core`, and `tutorial` modules
+- **Multi-module Architecture**: Clean separation of concerns with `core`, and `tutorial` modules
 - **JDK 11 Support**: Built and tested with Java 11
 - **SLF4J Logging**: Comprehensive logging with SLF4J and Logback
 - **TaskFactory Pattern**: Controlled task creation and dependency injection
@@ -21,12 +21,6 @@ BreezeFlow is a lightweight workflow engine library that provides a clean API fo
 - **Cloud Ready**: Configured for deployment to cloud artifactory repositories
 
 ## Module Structure
-
-### Common Module (`breezeflow-common`)
-Contains shared utilities and common functionality:
-- `BreezeFlowLoggerFactory`: Centralized logger creation
-- `LogFactory`: Logger factory for consistent logging
-- `ValidationUtils`: Common validation utilities
 
 ### Core Module (`breezeflow-core`)
 Contains the main workflow engine implementation:
@@ -57,8 +51,28 @@ Add the following to your `pom.xml`:
 ```xml
 <dependency>
     <groupId>org.zero2me.breezeflow</groupId>
+    <artifactId>breezeflow</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+</dependency>
+```
+
+If use library directly:  
+first copy the breezeflow-1.0.0-SNAPSHOT.jar to the lib directory.   
+add below into the POM.xml.  
+```xml
+<repositories>
+    <repository>
+        <id>local-maven-repo</id>
+        <url>file:///${project.basedir}/lib</url>
+    </repository>
+</repositories>
+
+<dependency>
+    <groupId>org.zero2me</groupId>
     <artifactId>breezeflow-core</artifactId>
     <version>1.0.0-SNAPSHOT</version>
+    <scope>system</scope>
+    <systemPath>${project.basedir}/lib/breezeflow-1.0.0-SNAPSHOT.jar</systemPath>
 </dependency>
 ```
 
@@ -136,37 +150,10 @@ mvn clean install
 mvn clean package -DskipTests
 ```
 
-## Deployment
-
-### Cloud Artifactory Configuration
-
-1. Update the `distributionManagement` section in the root `pom.xml` with your artifactory URLs
-2. Set environment variables:
-   ```bash
-   export ARTIFACTORY_USERNAME=your-username
-   export ARTIFACTORY_PASSWORD=your-password
-   export GPG_PASSPHRASE=your-gpg-passphrase  # For signed releases
-   ```
-
-### Deployment Commands
-
-```bash
-# Deploy snapshots
-mvn clean deploy
-
-# Deploy release (with GPG signing)
-mvn clean deploy -Prelease
-```
-
-## Development
-
 ### Project Structure
 ```
 breezeflow/
 ├── pom.xml                 # Parent POM
-├── common/                 # Common utilities module
-│   ├── pom.xml
-│   └── src/
 ├── core/                   # Core implementation module
 │   ├── pom.xml
 │   └── src/
@@ -265,50 +252,6 @@ You can customize logging levels and appenders as needed.
 ## Tutorial and Examples
 
 The project includes a comprehensive tutorial module with examples and best practices:
-
-### Running Tutorials
-
-```bash
-# Build tutorial module
-mvn -q -f tutorial/pom.xml clean compile
-
-# Run demo workflow
-mvn -q -f tutorial/pom.xml exec:java -Dexec.mainClass="org.zero2me.breezeflow.tutorial.DemoWorkflow"
-
-# Package and run JAR
-mvn -q -f tutorial/pom.xml clean package
-java -jar tutorial/target/breezeflow-tutorial-1.0.0-SNAPSHOT.jar
-```
-
-### Demo Workflow Example
-
-The tutorial includes a document processing workflow that demonstrates key BreezeFlow concepts:
-
-```text
-Root SequentialContainer
-  ├─ read_document (ReadDocumentTask)
-  ├─ analyze_document (ParallelContainer)
-  │    ├─ calc_word_count (CalculateWordCountTask)
-  │    └─ find_keyword_count (FindKeywordCountTask)
-  └─ post_processing (SequentialContainer)
-       ├─ print_summary (PrintSummaryTask)
-       └─ send_email (SendEmailTask)
-```
-
-### Tutorial Features
-
-- **Task Examples**: ReadDocumentTask, CalculateWordCountTask, FindKeywordCountTask, etc.
-- **Container Examples**: ParallelContainer and SequentialContainer usage
-- **Workflow Examples**: Document processing workflow with parallel analysis
-- **Best Practices**: Proper usage patterns and common pitfalls
-
-## Testing
-
-The project includes unit tests using JUnit 5. Run tests with:
-
-```bash
-mvn test
-```
 
 ## License
 

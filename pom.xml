@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.zero2me</groupId>
-    <artifactId>breezeflow</artifactId>
+    <artifactId>breezeflow-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>BreezeFlow Parent</name>
@@ -33,7 +33,6 @@
     </properties>
 
     <modules>
-        <module>common</module>
         <module>core</module>
         <module>tutorial</module>
     </modules>
@@ -115,7 +114,6 @@
                     <version>${maven.javadoc.plugin.version}</version>
                     <configuration>
                         <source>11</source>
-                        <target>11</target>
                         <encoding>UTF-8</encoding>
                         <docencoding>UTF-8</docencoding>
                         <charset>UTF-8</charset>
