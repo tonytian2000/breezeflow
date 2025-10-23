@@ -2,6 +2,9 @@
 
 This module demonstrates a document processing workflow built on the BreezeFlow engine. It focuses on the real tasks present in this module and clarifies the distinction between Facts and the SessionContext.
 
+## Architecture  
+![alt text](https://github.com/tonytian2000/breezeflow/blob/main/tutorial/examplearc.png)
+
 ## Concepts
 
 - **Facts**: Lightweight boolean (or simple state) flags used to indicate task completion or conditional readiness. Downstream tasks read facts in their `preCheck()` to decide whether they should run. Example facts: `DOC_PROCESS_DONE`, `DOC_CAL_WORD_COUNT_DONE`, `FIND_KEYWORD_DONE`, `PRINT_SUMMARY_DONE`, `EMAIL_SENT_DONE`.
