@@ -53,7 +53,7 @@ Add the following to your `pom.xml`:
 
 ```xml
 <dependency>
-    <groupId>org.zero2me.breezeflow</groupId>
+    <groupId>org.zero2me</groupId>
     <artifactId>breezeflow</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
