@@ -28,7 +28,7 @@ public class CalculateWordCountTask extends Task {
 		Boolean done = facts.get(DOC_DONE_FACT);
 		if (done == null || !done) {
 			logger.warn("CalculateWordCountTask {}: preCheck failed - '{}' fact missing or false", getId(), DOC_DONE_FACT);
-      facts.put(WORD_COUNT_DONE_FACT, false);
+      		facts.put(WORD_COUNT_DONE_FACT, false);
 			return false;
 		}
 
@@ -38,11 +38,11 @@ public class CalculateWordCountTask extends Task {
 	@Override
 	protected void invoke() {
 		String content = (String) sessionContext.getVariable(DOC_CONTENT_KEY);
-    if (content == null) {
-      logger.warn("CalculateWordCountTask {}: DOC_CONTENT is null in session context", getId());
-      facts.put(WORD_COUNT_DONE_FACT, false);
-      return;
-    }
+		if (content == null) {
+		  logger.warn("CalculateWordCountTask {}: DOC_CONTENT is null in session context", getId());
+		  facts.put(WORD_COUNT_DONE_FACT, false);
+		  return;
+		}
 
 		int wordCount = calculateWordCount(content);
 		sessionContext.setVariable(DOC_CONTENT_COUNT_KEY, wordCount);

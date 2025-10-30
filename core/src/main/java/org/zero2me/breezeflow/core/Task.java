@@ -25,6 +25,8 @@ public abstract class Task {
      */
     protected Logger logger = LogFactory.getLogger(Task.class);
     
+    private final String SESSION_TERMINATED = "SYS_SESSION_TERMINATED";
+
     /**
      * Unique identifier for this task instance.
      */
@@ -122,6 +124,12 @@ public abstract class Task {
      * @throws WorkflowExecutionException if task execution fails
      */
     public final void run() throws WorkflowExecutionException {
+        Object terminated = sessionContext.getVariable(SESSION_TERMINATED);
+        if (terminated != null && (boolean)terminated) {
+            logger.info("task {}:{} skipped due to session termination", id, name);
+            return;
+        }
+
         if (preCheck()) {
             logger.info("task {}:{} start", id, name);
             listener.notify(WorkflowEventType.TASK_STARTED, String.format("Task %s:%s started", id, name));
@@ -154,4 +162,13 @@ public abstract class Task {
      * Implementations should perform the actual work of the task here.
      */
     protected abstract void invoke();
+
+    /**
+     * Gracefully terminates the current workflow session.
+     */
+    protected void terminate() {
+        listener.notify(WorkflowEventType.TERMINATION, String.format("Task %s:%s terminated", id, name));
+        logger.info("task {}:{} terminated", id, name);
+        sessionContext.setVariable(SESSION_TERMINATED, true);
+    }
 }

@@ -31,7 +31,7 @@ public class FindKeywordCountTask extends Task {
 		if (docDone == null || !docDone) {
 			logger.warn("FindKeywordCountTask {}: preCheck failed - '{}' fact missing or false", getId(), DOC_DONE_FACT);
 			facts.put(DONE_FACT, false);
-      return false;
+      		return false;
 		}
 		
 		return true;
@@ -41,13 +41,13 @@ public class FindKeywordCountTask extends Task {
 	protected void invoke() {
 		Object keywordObj = sessionContext.getVariable(SEARCH_KEY_KEY);
 		if (!(keywordObj instanceof String) || ((String) keywordObj).isBlank()) {
-      facts.put(DONE_FACT, false);
+      		facts.put(DONE_FACT, false);
 			logger.warn("FindKeywordCountTask {}: preCheck failed - SEARCH_KEY missing or blank", getId());
-      return;
+      		return;
 		}
 		Object contentObj = sessionContext.getVariable(DOC_CONTENT_KEY);
 		if (!(contentObj instanceof String) || ((String) contentObj).isBlank()) {
-      facts.put(DONE_FACT, false);
+			facts.put(DONE_FACT, false);
 			logger.warn("FindKeywordCountTask {}: preCheck failed - DOC_CONTENT missing or blank", getId());
 			return;
 		}

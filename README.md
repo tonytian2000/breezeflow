@@ -307,13 +307,13 @@ public class MyCustomTask extends Task {
     @Override
     protected void invoke() {
         // Get data from session context
-        String input = (String) sessionContext.get("INPUT_DATA");
+        String input = (String) sessionContext.getVariable("INPUT_DATA");
         
         // Process data
         String result = processData(input);
         
         // Store result in session context
-        sessionContext.put("PROCESSED_RESULT", result);
+        sessionContext.setVariable("PROCESSED_RESULT", result);
         
         // Set fact indicating completion
         facts.put("MY_TASK_DONE", Boolean.TRUE);
@@ -349,12 +349,12 @@ Key/value store for input and output data that tasks produce and consume:
 
 ```java
 // Store data in session context
-sessionContext.put("DOC_CONTENT", documentText);
-sessionContext.put("DOC_CONTENT_COUNT", wordCount);
+sessionContext.setVariable("DOC_CONTENT", documentText);
+sessionContext.setVariable("DOC_CONTENT_COUNT", wordCount);
 
 // Retrieve data from session context
-String content = (String) sessionContext.get("DOC_CONTENT");
-Integer count = (Integer) sessionContext.get("DOC_CONTENT_COUNT");
+String content = (String) sessionContext.getVariable("DOC_CONTENT");
+Integer count = (Integer) sessionContext.getVariable("DOC_CONTENT_COUNT");
 ```
 
 ### Thread Pool Configuration
