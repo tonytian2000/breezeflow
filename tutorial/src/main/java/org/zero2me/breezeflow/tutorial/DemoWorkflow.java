@@ -33,19 +33,19 @@ public class DemoWorkflow extends Workflow {
 	@Override
 	public void buildWorkflow() {
 		// 1. Read document
-		rootContainer.addTask(taskFactory.buildTask(ReadDocumentTask.class, "read_document"));
+		addTask(ReadDocumentTask.class, "read_document");
 
 		// 2. Parallel analysis (word count + keyword count)
-		ParallelContainer parallel = taskFactory.buildTask(ParallelContainer.class, "analyze_document");
-		parallel.addTask(taskFactory.buildTask(CalculateWordCountTask.class, "calc_word_count"));
-		parallel.addTask(taskFactory.buildTask(FindKeywordCountTask.class, "find_keyword_count"));
-		rootContainer.addTask(parallel);
+		ParallelContainer parallel = (ParallelContainer)buildTask(ParallelContainer.class, "analyze_document");
+		parallel.addTask(buildTask(CalculateWordCountTask.class, "calc_word_count"));
+		parallel.addTask(buildTask(FindKeywordCountTask.class, "find_keyword_count"));
+		addTask(parallel);
 
 		// 3. Post processing sequential (print summary + send email)
-		SequentialContainer post = taskFactory.buildTask(SequentialContainer.class, "post_processing");
-		post.addTask(taskFactory.buildTask(PrintSummaryTask.class, "print_summary"));
-		post.addTask(taskFactory.buildTask(SendEmailTask.class, "send_email"));
-		rootContainer.addTask(post);
+		SequentialContainer post = (SequentialContainer)buildTask(SequentialContainer.class, "post_processing");
+		post.addTask(buildTask(PrintSummaryTask.class, "print_summary"));
+		post.addTask(buildTask(SendEmailTask.class, "send_email"));
+		addTask(post);
 	}
 
 	/**
@@ -55,8 +55,7 @@ public class DemoWorkflow extends Workflow {
 		DemoWorkflow workflow = new DemoWorkflow();
 		// Seed SEARCH_KEY in session context
 		workflow.getSessionContext().setVariable("SEARCH_KEY", "license");
-		// Build the workflow structure
-		workflow.buildWorkflow();
+
 		try {
 			workflow.run();
 		} catch (WorkflowExecutionException e) {

@@ -89,15 +89,20 @@ java -jar tutorial/target/breezeflow-tutorial-1.0.0-SNAPSHOT.jar
 
 ```java
 public void buildWorkflow() {
-    rootContainer.addTask(taskFactory.buildTask(ReadDocumentTask.class, "read_document"));
-    ParallelContainer parallel = taskFactory.buildTask(ParallelContainer.class, "analyze_document");
-    parallel.addTask(taskFactory.buildTask(CalculateWordCountTask.class, "calc_word_count"));
-    parallel.addTask(taskFactory.buildTask(FindKeywordCountTask.class, "find_keyword_count"));
-    rootContainer.addTask(parallel);
-    SequentialContainer post = taskFactory.buildTask(SequentialContainer.class, "post_processing");
-    post.addTask(taskFactory.buildTask(PrintSummaryTask.class, "print_summary"));
-    post.addTask(taskFactory.buildTask(SendEmailTask.class, "send_email"));
-    rootContainer.addTask(post);
+    // Add tasks directly using Workflow.addTask() or Workflow.buildTask()
+    // DO NOT use TaskFactory directly - it's an internal implementation detail
+    
+    addTask(ReadDocumentTask.class, "read_document");
+    
+    ParallelContainer parallel = (ParallelContainer) buildTask(ParallelContainer.class, "analyze_document");
+    parallel.addTask(buildTask(CalculateWordCountTask.class, "calc_word_count"));
+    parallel.addTask(buildTask(FindKeywordCountTask.class, "find_keyword_count"));
+    addTask(parallel);
+    
+    SequentialContainer post = (SequentialContainer) buildTask(SequentialContainer.class, "post_processing");
+    post.addTask(buildTask(PrintSummaryTask.class, "print_summary"));
+    post.addTask(buildTask(SendEmailTask.class, "send_email"));
+    addTask(post);
 }
 ```
 
@@ -152,6 +157,8 @@ tutorial/
 6. Keep tasks single-purpose; compose with containers for complexity.
 7. Fail fast in `invoke()` if critical variables are unexpectedly null (after passing `preCheck()`).
 8. Consider adding integration tests covering full workflow execution.
+9. **Use Workflow's `addTask()` and `buildTask()` methods** - Never access `taskFactory` or `rootContainer` directly in `buildWorkflow()`. These are internal implementation details.
+10. Use `addTask(Class, String)` to create and add a task in one step, or `buildTask(Class, String)` followed by `addTask(Task)` for more complex scenarios (e.g., building containers with child tasks).
 
 ## Troubleshooting
 

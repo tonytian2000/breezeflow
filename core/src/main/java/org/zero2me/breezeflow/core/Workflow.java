@@ -1,8 +1,11 @@
 package org.zero2me.breezeflow.core;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.util.UUID;
+
+import lombok.Setter;
 import org.slf4j.Logger;
 
 import org.zero2me.breezeflow.common.LogFactory;
@@ -58,7 +61,8 @@ public class Workflow {
     /**
      * Factory for creating task instances.
      */
-    @Getter
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     protected TaskFactory taskFactory;
 
     /**
@@ -93,6 +97,7 @@ public class Workflow {
         id = genId();
         taskFactory = new TaskFactory(facts, sessionContext, sessionConfig, listener);
         rootContainer = (SequentialContainer)taskFactory.buildTask(SequentialContainer.class, "root_container");
+        buildWorkflow();
     }
 
     /**
@@ -110,17 +115,36 @@ public class Workflow {
      *
      * @param taskClass the class of the task to create
      * @param name the name for the task
+     * @return the created task instance
      */
-    public void addTask(Class<? extends Task> taskClass, String name) {
+    public Task addTask(Class<? extends Task> taskClass, String name) {
         Task newTask = taskFactory.buildTask(taskClass, name);
         rootContainer.addTask(newTask);
+
+        return newTask;
+    }
+
+    /**
+     * Builds a task without adding it to the workflow.
+     * Creates a new task instance of the specified class with the given name.
+     * This allows for manual task management and custom task container configurations.
+     *
+     * @param taskClass the class of the task to create
+     * @param name the name for the task
+     * @return the created task instance
+     */
+    public Task buildTask(Class<? extends Task> taskClass, String name) {
+        Task newTask = taskFactory.buildTask(taskClass, name);
+        return newTask;
     }
 
     /**
      * Adds an existing task to this workflow.
-     * Adds the specified task to the root container.
+     * Adds the provided task instance to the root container.
+     * This method is useful when you have already created a task using buildTask
+     * or need to add a pre-configured task instance.
      *
-     * @param task the task to add
+     * @param task the task instance to add to the workflow
      */
     public void addTask(Task task) {
         rootContainer.addTask(task);
@@ -131,7 +155,7 @@ public class Workflow {
      * This method is intended to be overridden by subclasses to define
      * the specific task sequence for the workflow.
      */
-    public void buildWorkflow() {
+    protected void buildWorkflow() {
         //Leave to the subclass to build the workflow
     }
 
