@@ -39,4 +39,14 @@ public class SessionContext {
     public Object getVariable(String name) {
         return contextData.get(name);
     }
+
+    /**
+     * Checks whether a variable is present in the execution context.
+     *
+     * @param name the variable name to check
+     * @return {@code true} if the variable name exists, {@code false} otherwise
+     */
+    public Boolean hasVariable(String name) {
+        return contextData.containsKey(name);
+    }
 }
