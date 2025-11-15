@@ -160,22 +160,5 @@ tutorial/
 9. **Use Workflow's `addTask()` and `buildTask()` methods** - Never access `taskFactory` or `rootContainer` directly in `buildWorkflow()`. These are internal implementation details.
 10. Use `addTask(Class, String)` to create and add a task in one step, or `buildTask(Class, String)` followed by `addTask(Task)` for more complex scenarios (e.g., building containers with child tasks).
 
-## Troubleshooting
-
-| Symptom | Likely Cause | Resolution |
-|---------|--------------|------------|
-| Task skipped | `preCheck()` returned false | Ensure required fact/variable produced by prior task |
-| Word/keyword counts zero | Wrong `SEARCH_KEY` or empty content | Verify `SEARCH_KEY` value and document load |
-| Summary missing | Facts not set by analysis tasks | Check logs for warnings from analysis tasks |
-| Email not "sent" | `PRINT_SUMMARY_DONE` false or no `TASK_SUMMARY` | Confirm summary task ran successfully |
-
-## Contributing
-
-1. Add new tasks under `tutorial/tasks` with clear naming.
-2. Update this README’s tables for new facts/variables.
-3. Include unit tests for `preCheck()` and `invoke()` logic.
-4. Keep public API changes in core modules documented separately.
-5. Maintain consistency in fact naming: `<DOMAIN>_<ACTION>_DONE`.
-
 ---
 Last updated: 2025-10-21

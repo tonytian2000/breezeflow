@@ -92,6 +92,17 @@ public class Facts implements Iterable<Fact<?>> {
     }
 
     /**
+     * Judge if fact is passed by name.
+     *
+     * @param factName name of the fact, must not be null
+     * @return true if passed, false if failed
+     */
+    public boolean isTrue(String factName) {
+        Boolean success = get(factName);
+        return success != null && success == true;
+    }
+
+    /**
      * Return a copy of the facts as a map. It is not intended to manipulate
      * facts outside of the rules engine (aka other than manipulating them through rules).
      *

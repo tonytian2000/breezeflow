@@ -125,6 +125,20 @@ public class Workflow {
     }
 
     /**
+     * Adds a task to this workflow.
+     * Creates a new task of the specified class and adds it to the root container.
+     *
+     * @param taskClass the class of the task to create
+     * @return the created task instance
+     */
+    public Task addTask(Class<? extends Task> taskClass) {
+        Task newTask = taskFactory.buildTask(taskClass, taskClass.getSimpleName());
+        rootContainer.addTask(newTask);
+
+        return newTask;
+    }
+
+    /**
      * Builds a task without adding it to the workflow.
      * Creates a new task instance of the specified class with the given name.
      * This allows for manual task management and custom task container configurations.
